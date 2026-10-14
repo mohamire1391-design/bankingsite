@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سامانه محاسبه وام و سپرده</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Tahoma, 'Segoe UI', Arial, sans-serif;
+  }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    padding: 20px;
+    color: #fff;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* حباب‌های متحرک پس‌زمینه */
+  body::before,
+  body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+    animation: floatBubble 20s ease-in-out infinite;
+  }
+
+  body::before {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(120, 80, 255, 0.5), transparent 70%);
+    top: -100px;
+    right: -100px;
+  }
+
+  body::after {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0, 200, 255, 0.4), transparent 70%);
+    bottom: -150px;
+    left: -150px;
+    animation-delay: -10s;
+  }
+
+  @keyframes floatBubble {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(50px, -50px) scale(1.1); }
+    66% { transform: translate(-30px, 30px) scale(0.9); }
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== هدر گلس‌مورفیسم ===== */
+  header {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 25px 35px;
+    margin-bottom: 35px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s;
+  }
+
+  header.center-mode {
+    justify-content: center;
+  }
+
+  .header-content {
+    text-align: center;
+  }
+
+  .header-content h1 {
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #00d2ff, #7b68ee, #ff6ec7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 5px;
+  }
+
+  .header-content p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+  }
+
+  .home-btn {
+    background: linear-gradient(135deg, #ff6ec7, #7b68ee);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(123, 104, 238, 0.4);
+    font-family: Tahoma, 'Segoe UI', Arial, sans-serif;
+  }
+
+  .home-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 30px rgba(123, 104, 238, 0.6);
+  }
+
+  .home-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .home-btn.hidden {
+    display: none;
+  }
+
+  /* ===== دکمه‌های اصلی گرادینت ===== */
+  .main-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 22px;
+    margin-bottom: 35px;
+  }
+
+  .main-btn {
+    border: none;
+    padding: 40px 25px;
+    border-radius: 24px;
+    font-size: 1.35rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    position: relative;
+    overflow: hidden;
+    font-family: Tahoma, 'Segoe UI', Arial, sans-serif;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  .main-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: rotate(45deg);
+    transition: all 0.6s;
+    opacity: 0;
+  }
+
+  .main-btn:hover::before {
+    opacity: 1;
+    left: 100%;
+  }
+
+  .main-btn:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  }
+
+  .main-btn:active {
+    transform: translateY(-3px) scale(0.98);
+  }
+
+  .main-btn.loan {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #ff6b6b 100%);
+    box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
+  }
+
+  .main-btn.deposit {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #43e97b 100%);
+    box-shadow: 0 10px 30px rgba(79, 172, 254, 0.4);
+  }
+
+  .main-btn.loan-types {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    box-shadow: 0 10px 30px rgba(118, 75, 162, 0.4);
+  }
+
+  .icon-wrapper {
+    width: 75px;
+    height: 75px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .icon-wrapper svg {
+    width: 40px;
+    height: 40px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  }
+
+  /* ===== بخش‌های گلس‌مورفیسم ===== */
+  .section {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border-radius: 28px;
+    padding: 40px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+    display: none;
+    animation: glassSlideIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .section.active {
+    display: block;
+  }
+
+  @keyframes glassSlideIn {
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .section-header {
+    margin-bottom: 30px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .section-header h2 {
+    font-size: 1.7rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #00d2ff, #7b68ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .form-group {
+    margin-bottom: 22px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.05rem;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-family: Tahoma, 'Segoe UI', Arial, sans-serif;
+    transition: all 0.3s;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    backdrop-filter: blur(10px);
+  }
+
+  input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: rgba(123, 104, 238, 0.6);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 0 4px rgba(123, 104, 238, 0.2);
+  }
+
+  select option {
+    background: #302b63;
+    color: #fff;
+  }
+
+  /* ===== دکمه محاسبه گرادینت ===== */
+  .calc-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    color: white;
+    border: none;
+    padding: 18px 35px;
+    border-radius: 16px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s;
+    margin-top: 12px;
+    box-shadow: 0 6px 25px rgba(118, 75, 162, 0.4);
+    font-family: Tahoma, 'Segoe UI', Arial, sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .calc-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: all 0.5s;
+  }
+
+  .calc-btn:hover::before {
+    left: 100%;
+  }
+
+  .calc-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 35px rgba(118, 75, 162, 0.6);
+  }
+
+  /* ===== جعبه نتیجه گلس ===== */
+  .result-box {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 28px;
+    border-radius: 18px;
+    margin-top: 28px;
+    display: none;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .result-box.show {
+    display: block;
+    animation: glassSlideIn 0.5s;
+  }
+
+  .result-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .result-item:last-child {
+    border-bottom: none;
+    font-weight: 900;
+    font-size: 1.2rem;
+    background: linear-gradient(135deg, #00d2ff, #7b68ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    padding-top: 18px;
+  }
+
+  .result-label { color: rgba(255, 255, 255, 0.8); }
+  .result-value { color: #fff; font-weight: 700; }
+
+  /* ===== جعبه اطلاعات مبلغ ===== */
+  .amount-info {
+    background: rgba(255, 243, 205, 0.12);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    padding: 16px 20px;
+    border-radius: 14px;
+    margin-top: 12px;
+    display: none;
+    animation: glassSlideIn 0.3s;
+  }
+
+  .amount-info.show { display: block; }
+
+  .amount-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .amount-info-label {
+    color: rgba(255, 220, 150, 0.9);
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .amount-info-value {
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+
+  .amount-info-value.toman {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.15rem;
+  }
+
+  .amount-info-value.words {
+    color: rgba(100, 255, 180, 0.95);
+    font-size: 1.05rem;
+    width: 100%;
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(255, 193, 7, 0.3);
+  }
+
+  /* ===== کارت‌های انواع وام ===== */
+  .loan-types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 22px;
+    margin-top: 25px;
+  }
+
+  .loan-type-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .loan-type-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+  }
+
+  .loan-type-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .loan-type-icon {
+    width: 65px;
+    height: 65px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+    box-shadow: 0 6px 20px rgba(118, 75, 162, 0.4);
+  }
+
+  .loan-type-icon svg { width: 34px; height: 34px; color: white; }
+
+  .loan-type-card h3 {
+    color: #fff;
+    margin-bottom: 14px;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  .loan-type-card p {
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.9;
+    font-size: 0.95rem;
+  }
+
+  .loan-type-card ul {
+    margin-top: 12px;
+    padding-right: 20px;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .loan-type-card ul li {
+    margin-bottom: 6px;
+    line-height: 1.7;
+  }
+
+  .error {
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    margin-top: 8px;
+    display: none;
+    font-weight: 700;
+  }
+
+  .error.show { display: block; }
+
+  @media (max-width: 768px) {
+    .main-buttons { grid-template-columns: 1fr; }
+    .header-content h1 { font-size: 1.5rem; }
+    header { flex-direction: column; gap: 15px; text-align: center; }
+    .section { padding: 22px; }
+    .loan-types-grid { grid-template-columns: 1fr; }
+    body::before, body::after { width: 300px; height: 300px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header id="main-header">
+    <div class="header-content">
+      <h1>🏦 سامانه محاسبه وام و سپرده</h1>
+      <p>محاسبه دقیق اقساط وام، سود سپرده و آشنایی با انواع تسهیلات بانکی</p>
+    </div>
+    <button class="home-btn hidden" id="homeBtn" onclick="goHome()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      صفحه اصلی
+    </button>
+  </header>
+
+  <div id="main-menu" class="main-buttons">
+    <button class="main-btn loan" onclick="showSection('loan')">
+      <div class="icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+          <circle cx="12" cy="12" r="2"></circle>
+          <path d="M6 12h.01M18 12h.01"></path>
+        </svg>
+      </div>
+      محاسبه وام
+    </button>
+
+    <button class="main-btn deposit" onclick="showSection('deposit')">
+      <div class="icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 21h18M5 21V7l8-4 8 4v14M8 21v-9a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v9"></path>
+          <path d="M9 10h6M9 14h6"></path>
+        </svg>
+      </div>
+      سپرده‌گذاری
+    </button>
+
+    <button class="main-btn loan-types" onclick="showSection('loanTypes')">
+      <div class="icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          <path d="M8 7h8M8 11h6"></path>
+        </svg>
+      </div>
+      انواع وام‌ها
+    </button>
+  </div>
+
+  <!-- بخش محاسبه وام -->
+  <div id="loan-section" class="section">
+    <div class="section-header"><h2>💰 محاسبه اقساط وام</h2></div>
+    <div class="form-group">
+      <label for="loan-amount">مبلغ وام (ریال)</label>
+      <input type="text" id="loan-amount" placeholder="مثال: 1,000,000,000" inputmode="numeric">
+      <div class="amount-info" id="loan-amount-info">
+        <div class="amount-info-row">
+          <span class="amount-info-label">معادل تومان:</span>
+          <span class="amount-info-value toman" id="loan-amount-toman">-</span>
+        </div>
+        <div class="amount-info-row">
+          <span class="amount-info-value words" id="loan-amount-words">-</span>
+        </div>
+      </div>
+      <span class="error" id="loan-amount-error">لطفا مبلغ معتبر (حداقل ۰ میلیون ریال) وارد کنید</span>
+    </div>
+    <div class="form-group">
+      <label for="loan-rate">سود سالانه وام (درصد)</label>
+      <select id="loan-rate"><option value="">-- انتخاب کنید --</option></select>
+    </div>
+    <div class="form-group">
+      <label for="loan-months">مدت بازپرداخت (ماه)</label>
+      <select id="loan-months"><option value="">-- انتخاب کنید --</option></select>
+    </div>
+    <button class="calc-btn" onclick="calculateLoan()"> محاسبه وام</button>
+
+    <div class="result-box" id="loan-result">
+      <div class="result-item"><span class="result-label">مبلغ وام:</span><span class="result-value" id="res-loan-amount">-</span></div>
+      <div class="result-item"><span class="result-label">قسط ماهیانه:</span><span class="result-value" id="res-monthly">-</span></div>
+      <div class="result-item"><span class="result-label">کل سود وام:</span><span class="result-value" id="res-interest">-</span></div>
+      <div class="result-item"><span class="result-label">جمع کل پرداختی:</span><span class="result-value" id="res-total">-</span></div>
+    </div>
+  </div>
+
+  <!-- بخش سپرده‌گذاری -->
+  <div id="deposit-section" class="section">
+    <div class="section-header"><h2>🏛️ محاسبه سود سپرده</h2></div>
+    <div class="form-group">
+      <label for="dep-amount">مبلغ سپرده (ریال) - حداقل ۱,۰۰,۰۰۰ ریال</label>
+      <input type="text" id="dep-amount" placeholder="مثال: 50,000,000" inputmode="numeric">
+      <div class="amount-info" id="dep-amount-info">
+        <div class="amount-info-row">
+          <span class="amount-info-label">معادل تومان:</span>
+          <span class="amount-info-value toman" id="dep-amount-toman">-</span>
+        </div>
+        <div class="amount-info-row">
+          <span class="amount-info-value words" id="dep-amount-words">-</span>
+        </div>
+      </div>
+      <span class="error" id="dep-amount-error">حداقل مبلغ ۱,۰۰۰,۰۰ ریال است</span>
+    </div>
+    <div class="form-group">
+      <label for="dep-rate">سود سالیانه سپرده (درصد)</label>
+      <select id="dep-rate"><option value="">-- انتخاب کنید --</option></select>
+    </div>
+    <div class="form-group">
+      <label for="dep-months">مدت سپرده‌گذاری (ماه)</label>
+      <select id="dep-months"><option value="">-- انتخاب کنید --</option></select>
+    </div>
+    <button class="calc-btn" onclick="calculateDeposit()">🧮 محاسبه سود</button>
+
+    <div class="result-box" id="dep-result">
+      <div class="result-item"><span class="result-label">مبلغ سپرده:</span><span class="result-value" id="res-dep-amount">-</span></div>
+      <div class="result-item"><span class="result-label">سود ماهیانه:</span><span class="result-value" id="res-dep-monthly">-</span></div>
+      <div class="result-item"><span class="result-label">سود سالانه:</span><span class="result-value" id="res-dep-yearly">-</span></div>
+      <div class="result-item"><span class="result-label">کل سود در مدت سپرده:</span><span class="result-value" id="res-dep-total">-</span></div>
+      <div class="result-item"><span class="result-label">جمع نهایی (اصل + سود):</span><span class="result-value" id="res-dep-final">-</span></div>
+    </div>
+  </div>
+
+  <!-- بخش انواع وام‌ها -->
+  <div id="loanTypes-section" class="section">
+    <div class="section-header"><h2>📚 آشنایی با انواع تسهیلات بانکی</h2></div>
+    <p style="color:rgba(255,255,255,0.75); line-height:1.9; margin-bottom:25px;">
+      در این بخش با انواع وام‌ها و تسهیلات بانکی رایج در ایران آشنا می‌شوید.
+    </p>
+
+    <div class="loan-types-grid">
+      <div class="loan-type-card">
+        <div class="loan-type-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <h3>💚 وام قرض‌الحسنه</h3>
+        <p>وامی بدون سود یا با کارمزد ناچیز (۲ تا ۴ درصد).</p>
+        <ul>
+          <li>✅ سود: ۰ تا ۴ درصد</li>
+          <li>✅ مناسب برای: نیازهای ضروری، ازدواج</li>
+          <li>✅ بازپرداخت: ۱۲ تا ۶۰ ماه</li>
+        </ul>
+      </div>
+
+      <div class="loan-type-card">
+        <div class="loan-type-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v18h18"></path>
+            <path d="M7 14l4-4 4 4 5-5"></path>
+          </svg>
+        </div>
+        <h3> وام مضاربه</h3>
+        <p>بانک سرمایه را برای تجارت در اختیار متقاضی قرار می‌دهد.</p>
+        <ul>
+          <li>✅ سود: بر اساس توافق</li>
+          <li>✅ مناسب برای: بازرگانی</li>
+          <li>✅ مدت: کوتاه‌مدت</li>
+        </ul>
+      </div>
+
+      <div class="loan-type-card">
+        <div class="loan-type-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+            <path d="M3 9h18M9 21V9"></path>
+          </svg>
+        </div>
+        <h3>🏗️ مشارکت مدنی</h3>
+        <p>بانک در تأمین سرمایه پروژه مشارکت می‌کند.</p>
+        <ul>
+          <li>✅ سود: بر اساس درصد مشارکت</li>
+          <li>✅ مناسب برای: پروژه‌های تولیدی</li>
+          <li>✅ مدت: میان‌مدت و بلندمدت</li>
+        </ul>
+      </div>
+
+      <div class="loan-type-card">
+        <div class="loan-type-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="10" rx="2"></rect>
+          </svg>
+        </div>
+        <h3>🛒 مرابحه (فروش اقساطی)</h3>
+        <p>بانک کالا را خریده و با سود به صورت اقساطی می‌فروشد.</p>
+        <ul>
+          <li>✅ سود: ۱ تا ۲۳ درصد</li>
+          <li>✅ مناسب برای: خرید خودرو، لوازم خانگی</li>
+          <li>✅ بازپرداخت: ۱۲ تا ۰ ماه</li>
+        </ul>
+      </div>
+
+      <div class="loan-type-card">
+        <div class="loan-type-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          </svg>
+        </div>
+        <h3>🏠 جعاله (تعمیر مسکن)</h3>
+        <p>وام برای تعمیر، بازسازی یا تکمیل مسکن.</p>
+        <ul>
+          <li>✅ سود: ۱۸ تا ۲۳ درصد</li>
+          <li>✅ مناسب برای: تعمیر مسکن</li>
+          <li>✅ بازپرداخت: تا ۶۰ ماه</li>
+        </ul>
+      </div>
+
+      <div class="loan-type-card">
+        <div class="loan-type-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 6v6l4 2"></path>
+          </svg>
+        </div>
+        <h3>⏱️ مشارکت در تولید</h3>
+        <p>تسهیلات برای سرمایه در گردش واحدهای تولیدی.</p>
+        <ul>
+          <li>✅ سود: بر اساس مصوبات بانک مرکزی</li>
+          <li>✅ مناسب برای: کارخانجات</li>
+          <li>✅ مدت: کوتاه‌مدت</li>
+        </ul>
+      </div>
+
+      <div class="loan-type-card">
+        <div class="loan-type-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+          </svg>
+        </div>
+        <h3>🎓 وام تحصیلی</h3>
+        <p>وام با شرایط ویژه برای دانشجویان.</p>
+        <ul>
+          <li>✅ سود: قرض‌الحسنه (۲ تا ۴ درصد)</li>
+          <li>✅ مناسب برای: دانشجویان</li>
+          <li>✅ بازپرداخت: پس از فارغ‌التحصیلی</li>
+        </ul>
+      </div>
+
+      <div class="loan-type-card">
+        <div class="loan-type-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          </svg>
+        </div>
+        <h3>📦 وام خرید کالا</h3>
+        <p>تسهیلات برای خرید کالاهای ایرانی.</p>
+        <ul>
+          <li>✅ سود: ۴ تا ۱۸ درصد</li>
+          <li>✅ مناسب برای: لوازم خانگی ایرانی</li>
+          <li>✅ بازپرداخت: ۱۲ تا ۳۶ ماه</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ==================== تبدیل عدد به حروف فارسی ====================
+function numberToPersianWords(num) {
+  if (num === 0) return 'صفر';
+  if (num < 0) return 'منفی ' + numberToPersianWords(-num);
+
+  const ones = ['', 'یک', 'دو', 'سه', 'چهار', 'پنج', 'شش', 'هفت', 'هشت', 'نه'];
+  const teens = ['ده', 'یازده', 'دوازده', 'سیزده', 'چهارده', 'پانزده', 'شانزده', 'هفده', 'هجده', 'نوزده'];
+  const tens = ['', '', 'بیست', 'سی', 'چهل', 'پنجاه', 'شصت', 'هفتاد', 'هشتاد', 'نود'];
+  const hundreds = ['', 'یکصد', 'دویست', 'سیصد', 'چهارصد', 'پانصد', 'ششصد', 'هفتصد', 'هشتصد', 'نهصد'];
+  const scales = ['', 'هزار', 'میلیون', 'میلیارد', 'تریلیون'];
+
+  function threeDigitsToWords(n) {
+    if (n === 0) return '';
+    let result = '';
+    const h = Math.floor(n / 100);
+    const t = Math.floor((n % 100) / 10);
+    const o = n % 10;
+
+    if (h > 0) {
+      result += hundreds[h];
+      if (t > 0 || o > 0) result += ' و ';
+    }
+
+    if (t === 1) {
+      result += teens[o];
+    } else {
+      if (t > 0) {
+        result += tens[t];
+        if (o > 0) result += ' و ';
+      }
+      if (o > 0) result += ones[o];
+    }
+
+    return result;
+  }
+
+  let numStr = num.toString();
+  let groups = [];
+
+  while (numStr.length > 0) {
+    groups.unshift(parseInt(numStr.slice(-3)));
+    numStr = numStr.slice(0, -3);
+  }
+
+  let result = '';
+  for (let i = 0; i < groups.length; i++) {
+    const group = groups[i];
+    if (group !== 0) {
+      const scaleIndex = groups.length - 1 - i;
+      const words = threeDigitsToWords(group);
+      if (result !== '') result += ' و ';
+      result += words;
+      if (scales[scaleIndex]) result += ' ' + scales[scaleIndex];
+    }
+  }
+
+  return result;
+}
+
+function formatNumberWithCommas(num) {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+// ==================== راه‌اندازی فیلدهای مبلغ ====================
+function setupAmountField(inputId, infoId, tomanId, wordsId, minAmount) {
+  const input = document.getElementById(inputId);
+  const infoBox = document.getElementById(infoId);
+  const tomanEl = document.getElementById(tomanId);
+  const wordsEl = document.getElementById(wordsId);
+
+  input.addEventListener('input', function() {
+    let value = this.value.replace(/[^0-9]/g, '');
+
+    if (value === '') {
+      infoBox.classList.remove('show');
+      return;
+    }
+
+    const formatted = formatNumberWithCommas(value);
+    this.value = formatted;
+
+    const numValue = parseInt(value, 10);
+
+    if (numValue >= minAmount) {
+      const tomanValue = numValue / 10;
+      tomanEl.textContent = formatNumberWithCommas(tomanValue) + ' تومان';
+      const words = numberToPersianWords(numValue);
+      wordsEl.textContent = ' ' + words + ' ریال';
+      infoBox.classList.add('show');
+    } else {
+      infoBox.classList.remove('show');
+    }
+  });
+}
+
+setupAmountField('loan-amount', 'loan-amount-info', 'loan-amount-toman', 'loan-amount-words', 10000000);
+setupAmountField('dep-amount', 'dep-amount-info', 'dep-amount-toman', 'dep-amount-words', 1000000);
+
+// ==================== پر کردن گزینه‌ها ====================
+const loanRateSelect = document.getElementById('loan-rate');
+for (let i = 4; i <= 28; i++) {
+  const opt = document.createElement('option');
+  opt.value = i;
+  opt.textContent = i + '٪';
+  loanRateSelect.appendChild(opt);
+}
+
+const loanMonthsSelect = document.getElementById('loan-months');
+for (let i = 6; i <= 60; i += 6) {
+  const opt = document.createElement('option');
+  opt.value = i;
+  opt.textContent = i + ' ماه';
+  loanMonthsSelect.appendChild(opt);
+}
+
+const depRateSelect = document.getElementById('dep-rate');
+for (let i = 18; i <= 40; i++) {
+  const opt = document.createElement('option');
+  opt.value = i;
+  opt.textContent = i + '٪';
+  depRateSelect.appendChild(opt);
+}
+
+const depMonthsSelect = document.getElementById('dep-months');
+for (let i = 1; i <= 60; i++) {
+  const opt = document.createElement('option');
+  opt.value = i;
+  opt.textContent = i + ' ماه';
+  depMonthsSelect.appendChild(opt);
+}
+
+// ==================== توابع ناوبری ====================
+function showSection(section) {
+  document.getElementById('main-menu').style.display = 'none';
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+
+  const sectionMap = {
+    'loan': 'loan-section',
+    'deposit': 'deposit-section',
+    'loanTypes': 'loanTypes-section'
+  };
+
+  document.getElementById(sectionMap[section]).classList.add('active');
+  
+  // نمایش دکمه صفحه اصلی
+  document.getElementById('homeBtn').classList.remove('hidden');
+  document.getElementById('main-header').classList.remove('center-mode');
+  
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goHome() {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('main-menu').style.display = 'grid';
+  
+  // مخفی کردن دکمه صفحه اصلی و وسط‌چین کردن هدر
+  document.getElementById('homeBtn').classList.add('hidden');
+  document.getElementById('main-header').classList.add('center-mode');
+  
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function formatRial(num) {
+  return Math.round(num).toLocaleString('fa-IR') + ' ریال';
+}
+
+// ==================== محاسبه وام ====================
+function calculateLoan() {
+  const amountStr = document.getElementById('loan-amount').value.replace(/,/g, '');
+  const amount = parseFloat(amountStr);
+  const rate = parseFloat(document.getElementById('loan-rate').value);
+  const months = parseFloat(document.getElementById('loan-months').value);
+  const errorEl = document.getElementById('loan-amount-error');
+
+  errorEl.classList.remove('show');
+
+  if (!amount || amount < 10000000) {
+    errorEl.classList.add('show');
+    return;
+  }
+  if (!rate || !months) {
+    alert('لطفا تمام فیلدها را پر کنید');
+    return;
+  }
+
+  const monthlyRate = rate / 100 / 12;
+  let monthlyPayment;
+
+  if (monthlyRate === 0) {
+    monthlyPayment = amount / months;
+  } else {
+    monthlyPayment = amount * monthlyRate * Math.pow(1 + monthlyRate, months) /
+                     (Math.pow(1 + monthlyRate, months) - 1);
+  }
+
+  const totalPayment = monthlyPayment * months;
+  const totalInterest = totalPayment - amount;
+
+  document.getElementById('res-loan-amount').textContent = formatRial(amount);
+  document.getElementById('res-monthly').textContent = formatRial(monthlyPayment);
+  document.getElementById('res-interest').textContent = formatRial(totalInterest);
+  document.getElementById('res-total').textContent = formatRial(totalPayment);
+
+  document.getElementById('loan-result').classList.add('show');
+}
+
+// ==================== محاسبه سپرده ====================
+function calculateDeposit() {
+  const amountStr = document.getElementById('dep-amount').value.replace(/,/g, '');
+  const amount = parseFloat(amountStr);
+  const rate = parseFloat(document.getElementById('dep-rate').value);
+  const months = parseFloat(document.getElementById('dep-months').value);
+  const errorEl = document.getElementById('dep-amount-error');
+
+  errorEl.classList.remove('show');
+
+  if (!amount || amount < 1000000) {
+    errorEl.classList.add('show');
+    return;
+  }
+  if (!rate || !months) {
+    alert('لطفا تمام فیلدها را پر کنید');
+    return;
+  }
+
+  const monthlyInterest = amount * (rate / 100) / 12;
+  const yearlyInterest = amount * (rate / 100);
+  const totalInterest = monthlyInterest * months;
+  const finalAmount = amount + totalInterest;
+
+  document.getElementById('res-dep-amount').textContent = formatRial(amount);
+  document.getElementById('res-dep-monthly').textContent = formatRial(monthlyInterest);
+  document.getElementById('res-dep-yearly').textContent = formatRial(yearlyInterest);
+  document.getElementById('res-dep-total').textContent = formatRial(totalInterest);
+  document.getElementById('res-dep-final').textContent = formatRial(finalAmount);
+
+  document.getElementById('dep-result').classList.add('show');
+}
+
+// مقداردهی اولیه: وسط‌چین کردن هدر در صفحه اصلی
+document.getElementById('main-header').classList.add('center-mode');
+</script>
+</body>
+</html>
